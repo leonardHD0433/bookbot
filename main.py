@@ -1,20 +1,25 @@
+import sys
+from stats import count_words
+
 char_count = {}
 
 def main():
-    with open("books/frankenstein.txt") as f:
+    if len(sys.argv) < 2:
+        print("Usage: python main.py <path_to_book>")
+        sys.exit(1)
+
+    book_path = sys.argv[1]
+    with open(book_path) as f:
         files_contents = f.read()
 
     lowercased_text = to_lower(files_contents)
     count_char_occurence(lowercased_text)
+    char_sorted_count = sort_dict(char_count)
     word_count = count_words(lowercased_text)
-    gen_report(word_count)
+    gen_report(book_path, word_count, char_sorted_count)
 
     #print(char_count) #prints number of character appeared
     #print(f"Word count: {word_count}") #prints word count
-
-def count_words(text):
-    words = text.split()
-    return len(words)
 
 def to_lower(text):
     return text.lower()
@@ -30,16 +35,17 @@ def sort_dict(unsorted_dict):
     sorted_dict = sorted(unsorted_dict.items(), reverse = True, key=lambda x:x[1])
     return dict(sorted_dict)
 
-def gen_report(word_count):
-    print("--- Begin report of books/frankenstein.txt ---")
-    print(f"{word_count} words found in the document\n")
+def gen_report(book_path, word_count, char_sorted_count):
+    print("============ BOOKBOT ============")
+    print(f"Analyzing book found at {book_path}...")
+    print("----------- Word Count ----------")
+    print(f"Found {word_count} total words")
+    print("--------- Character Count -------")
+    for char, num in char_sorted_count.items():
+        if not char.isalpha():
+            continue
+        print(f"{char}: {num}")
 
-    sorted_char_count = sort_dict(char_count)
-    for char in sorted_char_count:
-        if char.isalpha():
-            char_occured = sorted_char_count[char]
-            print(f"The '{char}' character was found {char_occured} times")
-
-    print("--- End report ---")
+    print("============= END ===============")
 
 main()
